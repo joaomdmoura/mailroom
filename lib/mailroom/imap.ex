@@ -68,7 +68,7 @@ defmodule Mailroom.IMAP do
   def connect(server, username, password, options \\ []) do
     opts = parse_opts(options)
     {:ok, pid} = GenServer.start_link(__MODULE__, opts)
-    GenServer.call(pid, {:connect, server, opts.port, opts.timeout}, opts.timeout)
+    GenServer.call(pid, {:connect, server, opts.ssl, opts.port, opts.timeout}, opts.timeout)
 
     case login(pid, username, password) do
       {:ok, _msg} -> {:ok, pid}
@@ -257,15 +257,15 @@ defmodule Mailroom.IMAP do
     {:ok, %{debug: opts.debug, ssl: opts.ssl}}
   end
 
-  def handle_call({:connect, server, port, timeout}, from, state) do
-    {:ok, socket} = Socket.connect(server, port, ssl: state.ssl, debug: state.debug, active: true, timeout: timeout)
+  def handle_call({:connect, server, ssl, port, timeout}, from, state) do
+    {:ok, socket} = Socket.connect(server, port, ssl: ssl, debug: state.debug, active: true, timeout: timeout)
 
     {:noreply,
      %State{
        socket: socket,
        state: :unauthenticated,
        debug: state.debug,
-       ssl: state.ssl,
+       ssl: ssl,
        cmd_map: %{connect: from}
      }}
   end
