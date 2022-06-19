@@ -68,7 +68,7 @@ defmodule Mailroom.IMAP do
   def connect(server, username, password, options \\ []) do
     opts = parse_opts(options)
     {:ok, pid} = GenServer.start_link(__MODULE__, opts)
-    GenServer.call(pid, {:connect, server, opts.port, opts.timeout})
+    GenServer.call(pid, {:connect, server, [opts.port, opts.timeout]})
 
     case login(pid, username, password) do
       {:ok, _msg} -> {:ok, pid}
