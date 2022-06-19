@@ -51,6 +51,9 @@ defmodule Mailroom.Socket do
   defp parse_opts(opts, state \\ %__MODULE__{}, acc \\ [])
   defp parse_opts([], state, acc), do: {state, acc}
 
+  defp parse_opts([{:timeout, timeout} | tail], state, acc),
+    do: parse_opts(tail, %{state | timeout: timeout}, acc)
+    
   defp parse_opts([{:ssl, ssl} | tail], state, acc),
     do: parse_opts(tail, %{state | ssl: ssl}, acc)
 
